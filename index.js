@@ -53,6 +53,15 @@ async function run() {
             res.send(result);
         });
 
+        app.get("/resturent-email", async (req, res) => {
+            const userEmail = req.query.email;
+            const result = await resturentCollection.find({
+                addedByEmail: userEmail
+            }).toArray();
+            res.send(result);
+
+        });
+
         app.post('/resturent', async (req, res) => {
             const newPost = req.body;
             const result = await resturentCollection.insertOne(newPost);
@@ -70,6 +79,7 @@ async function run() {
             const result = await resturentCollection.updateOne(filter, updatedDoc, options);
             res.send(result);
         })
+
 
         
         app.put('/resturent/:id', async (req, res) => {
