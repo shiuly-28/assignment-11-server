@@ -62,6 +62,21 @@ async function run() {
 
         });
 
+        // Example: GET /posts?search=pizza
+        app.get('/posts', async (req, res) => {
+            try {
+                const search = req.query.search || '';
+                const query = {
+                    name: { $regex: search, $options: 'i' },
+                };
+                const result = await resturentCollection.find(query).toArray();
+                res.send(result);
+            } catch (err) {
+                res.status(500).send({ error: 'Failed to fetch posts' });
+            }
+        });
+
+
         app.post('/resturent', async (req, res) => {
             const newPost = req.body;
             const result = await resturentCollection.insertOne(newPost);
@@ -94,12 +109,22 @@ async function run() {
             res.send(result);
         })
 
+        app.patch('/resturent/:id', async (req, res) => {
+            const id = req.params?.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedFood = req.body;
+            const updateDoc = { $set: updatedFood };
+            const result = await resturentCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        })
+
+
         app.delete('/resturent/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await resturentCollection.deleteOne(query);
             res.send(result)
-        })
+        });
 
 
         // Send a ping to confirm a successful connection
